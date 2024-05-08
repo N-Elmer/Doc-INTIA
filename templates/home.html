@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des clients et des assurances</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table td, table th {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            padding: 8px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+        }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gestion des Clients</h1>
+        <form id="addCustomerForm" method="POST" action="/">
+            <input type="text" name="name" placeholder="Entrez le nom du client">
+            <input type="submit" value="Ajouter Client">
+        </form>
+
+        <h2>Clients</h2>
+        <table id="customerTable">
+            {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.name }}</td>
+                    <td>
+                        <button class="btn-update" data-name="{{ customer.name }}">Modifier</button>
+                        <button class="btn-delete" data-name="{{ customer.name }}">Supprimer</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="container">
+        <h1>Gestion des Assurances</h1>
+        <form id="addInsuranceForm" method="POST" action="/insurance">
+            <input type="text" name="policy" placeholder="Entrez le numéro de police de l'assurance">
+            <input type="submit" value="Ajouter Assurance">
+        </form>
+
+        <h2>Assurances</h2>
+        <table id="insuranceTable">
+            {% for insurance in insurances %}
+                <tr>
+                    <td>{{ insurance.policy }}</td>
+                    <td>
+                        <button class="btn-update-insurance" data-policy="{{ insurance.policy }}">Modifier</button>
+                        <button class="btn-delete-insurance" data-policy="{{ insurance.policy }}">Supprimer</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <script>
+        // JavaScript pour la gestion des clients
+        document.addEventListener('DOMContentLoaded', function () {
+            const customerTable = document.getElementById('customerTable');
+
+            // Écouteur d'événement pour les boutons de mise à jour et de suppression des clients
+            customerTable.addEventListener('click', function (event) {
+                if (event.target.classList.contains('btn-update')) {
+                    const name = event.target.getAttribute('data-name');
+                    const newName = prompt('Entrez le nouveau nom pour ' + name);
+                    if (newName !== null) {
+                        updateCustomer(name, newName);
+                    }
+                } else if (event.target.classList.contains('btn-delete')) {
+                    const name = event.target.getAttribute('data-name');
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ' + name + '?')) {
+                        deleteCustomer(name);
+                    }
+                }
+            });
+
+            // Fonction pour mettre à jour un client
+            function updateCustomer(oldName, newName) {
+                fetch('/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ oldname: oldName, newname: newName })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Échec de la mise à jour du client');
+                    }
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Échec de la mise à jour du client');
+                });
+            }
+
+            // Fonction pour supprimer un client
+            function deleteCustomer(name) {
+                fetch('/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: name })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Échec de la suppression du client');
+                    }
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Échec de la suppression du client');
+                });
+            }
+        });
+
+        // JavaScript pour la gestion des assurances
+        document.addEventListener('DOMContentLoaded', function () {
+            const insuranceTable = document.getElementById('insuranceTable');
+
+            // Écouteur d'événement pour les boutons de mise à jour et de suppression des assurances
+            insuranceTable.addEventListener('click', function (event) {
+                if (event.target.classList.contains('btn-update-insurance')) {
+                    const policy = event.target.getAttribute('data-policy');
+                    const newPolicy = prompt('Entrez le nouveau numéro de police pour ' + policy);
+                    if (newPolicy !== null) {
+                        updateInsurance(policy, newPolicy);
+                    }
+                } else if (event.target.classList.contains('btn-delete-insurance')) {
+                    const policy = event.target.getAttribute('data-policy');
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ' + policy + '?')) {
+                        deleteInsurance(policy);
+                    }
+                }
+            });
+
+            // Fonction pour mettre à jour une assurance
+            function updateInsurance(oldPolicy, newPolicy) {
+                fetch('/update_insurance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ oldpolicy: oldPolicy, newpolicy: newPolicy })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Échec de la mise à jour de l\'assurance');
+                    }
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Échec de la mise à jour de l\'assurance');
+                });
+            }
+
+            // Fonction pour supprimer une assurance
+            function deleteInsurance(policy) {
+                fetch('/delete_insurance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ policy: policy })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Échec de la suppression de l\'assurance');
+                    }
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Échec de la suppression de l\'assurance');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
