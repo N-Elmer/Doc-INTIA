@@ -1,5 +1,3 @@
-Here's the README.md translated into French:
-
 ---
 
 # Système de Gestion des Clients et des Assurances
@@ -24,13 +22,13 @@ Il s'agit d'une application web basée sur Flask pour la gestion des clients et 
 1. Clonez le dépôt :
 
     ```bash
-    git clone <URL-du-dépôt>
+    git clone https://N-Elmer/Doc-INTIA/
     ```
 
 2. Accédez au répertoire du projet :
 
     ```bash
-    cd gestion-clients-assurances
+    cd Doc-INTIA
     ```
 
 3. Installez les dépendances :
@@ -70,10 +68,9 @@ Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de
 
 ## Remerciements
 
-- Ce projet a été créé dans le cadre d'un exercice d'apprentissage.
+- Ce projet a été créé dans le cadre de gestion.
 - Documentation Flask : [https://flask.palletsprojects.com/](https://flask.palletsprojects.com/)
-- Documentation SQLAlchemy : [https://docs.sqlalchemy.org/](https://docs.sqlalchemy.org/)
 
 ---
 
-N'hésitez pas à personnaliser davantage le fichier README.md pour inclure toute information supplémentaire ou des instructions spécifiques à votre projet.
+N'hésitez pas à nous contacter.
